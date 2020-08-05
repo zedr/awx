@@ -336,6 +336,12 @@ class Page(object):
                     natural_key[key] = None
             elif key in self:
                 natural_key[key] = self[key]
+            else:
+                log.warning(
+                    "Endpoint '{}' lacks attribute for natural key: {}".format(
+                        self.endpoint, key
+                    )
+                )
 
         natural_key['type'] = self['type']
         return natural_key

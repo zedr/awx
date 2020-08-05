@@ -1,6 +1,7 @@
 import itertools
 import logging
 
+from awxkit.api import patches
 from awxkit.api.resources import resources
 import awxkit.exceptions as exc
 from . import base
@@ -135,6 +136,7 @@ class ApiV2(base.Base):
             return None
         fields['natural_key'] = natural_key
 
+        patches.patch_missing(_page, fields)
         return utils.remove_encrypted(fields)
 
     def _export_list(self, endpoint):
@@ -270,7 +272,7 @@ class ApiV2(base.Base):
             endpoint = _page.related[name]
             if isinstance(related_set, dict):  # Relateds that are just json blobs, e.g. survey_spec
                 endpoint.post(related_set)
-                return
+                continue
 
             if 'natural_key' not in related_set[0]:  # It is an attach set
                 # Try to impedance match

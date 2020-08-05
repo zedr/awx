@@ -1,6 +1,7 @@
 import awxkit.exceptions as exc
 
-from awxkit.api.pages import base, WorkflowJobTemplate, UnifiedJobTemplate, JobTemplate
+from awxkit.api.pages import base, WorkflowJobTemplate, UnifiedJobTemplate, \
+    JobTemplate, patches
 from awxkit.api.mixins import HasCreate, DSAdapter
 from awxkit.api.resources import resources
 from awxkit.utils import update_payload, PseudoNamespace, suppress, random_title
@@ -120,6 +121,11 @@ class WorkflowJobTemplateNode(HasCreate, base.Base):
     def get_job_node(self, workflow_job):
         candidates = workflow_job.get_related('workflow_nodes', identifier=self.identifier)
         return candidates.results.pop()
+
+    def get_natural_key(self, *args, **kwargs):
+        natural_key = super().get_natural_key(*args, **kwargs)
+        patches.patch_workflow_node_identifier(self, natural_key)
+        return natural_key
 
 
 page.register_page([resources.workflow_job_template_node,

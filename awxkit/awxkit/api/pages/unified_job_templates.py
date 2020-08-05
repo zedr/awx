@@ -1,3 +1,4 @@
+from awxkit.api import patches
 from awxkit.api.resources import resources
 from awxkit.utils import random_title, update_payload
 from awxkit.api.mixins import HasStatus
@@ -73,6 +74,11 @@ class UnifiedJobTemplate(HasStatus, base.Base):
         return super(
             UnifiedJobTemplate,
             self).is_successful and not self.last_update_failed and self.last_updated is not None
+
+    def get_natural_key(self, *args, **kwargs):
+        natural_key = super().get_natural_key(*args, **kwargs)
+        patches.patch_job_template_organization(self, natural_key)
+        return natural_key
 
 
 page.register_page(resources.unified_job_template, UnifiedJobTemplate)
